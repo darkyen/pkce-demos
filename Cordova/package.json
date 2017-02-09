@@ -1,0 +1,33 @@
+{
+  "name": "auth0-phonegap-sample",
+  "version": "1.0.2",
+  "description": "Demonstrates using Auth0 in Cordova",
+  "scripts": {
+    "build": "webpack -p --config webpack.config.js",
+    "watch": "webpack --watch --config webpack.config.js",
+    "prepare": "phonegap prepare ios && phonegap prepare android",
+    "android": "phonegap run android",
+    "ios": "phonegap run ios"
+  },
+  "author": "Auth0",
+  "license": "ISC",
+  "dependencies": {
+    "auth0-js": "^8.0.4",
+    "core-decorators": "^0.14.0",
+    "jwt-decode": "^2.1.0",
+    "url-parse": "^1.1.7"
+  },
+  "devDependencies": {
+    "phonegap": "6.4.2",
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
+    "babel-plugin-transform-class-properties": "^6.19.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "expose-loader": "^0.7.1",
+    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony",
+    "webpack": "^1.14.0"
+  }
+}
