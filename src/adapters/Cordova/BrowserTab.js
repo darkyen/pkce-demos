@@ -6,12 +6,6 @@ class BrowserTabAdapter {
         // You can optionally use this to customize the look and feel.
     }
 
-    static isAvailable () {
-        return new Promise((resolve, reject) => {
-            SafariViewController.isAvailable(resolve, reject)
-        });
-    }
-
     // Opens the url
     open(url) {
         const sharedView = window.SafariViewController;

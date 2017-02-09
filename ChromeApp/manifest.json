@@ -1,0 +1,19 @@
+{
+    "name": "Auth0 Chrome Extension Sample",
+    "version": "0.4.0",
+    "manifest_version": 2,
+    "description": "This extension demonstrates how to use Auth0 with Chrome Extensions",
+    "homepage_url": "https://auth0.com/",
+    "browser_action": {
+        "default_title": "Auth0",
+        "default_popup": "index.html"
+    },
+    "background": {
+      "page": "index.html",
+      "persistent": true
+    },
+    "permissions": [
+        "identity",
+        "notifications"
+    ]
+}

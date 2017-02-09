@@ -3,33 +3,34 @@ import autobind from 'core-decorators/lib/autobind';
 @autobind
 class Session {
     static shared = null;
-    
-    static queueForCallback(resolve, reject, client) {
+    static packageIdentifier = null;
+
+    static queueForCallback(resolve, reject, adapter) {
         if (Session.shared) {
             Session.shared.stop(new Error('Only one instance of auth can happen at a time'));
         }
-        Session.shared = new Session(resolve, reject, client);
+        Session.shared = new Session(resolve, reject, adapter);
     }
 
-    static handleCallback (url) {
+    static handleCallback (...args) {
         if (Session.shared) {
-            Session.shared.resume(url);
+            Session.shared.resume(...args);
         }
     }
 
-    constructor(resolve, reject, client) {
+    constructor(resolve, reject, adapter) {
         this.reject = reject;
-        this.client = client;
         this.resolve = resolve;
+        this.adapter = adapter;
     }
 
     stop(reason) {
         this.reject(reason);
     }
 
-    resume(url) {
-        if (this.client.canHandleUrl(url)) {
-            this.resolve(url);
+    resume(...args) {
+        if (this.adapter.canHandle(...args)) {
+            this.resolve(args);
             Session.shared = null;
         }
     }

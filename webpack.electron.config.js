@@ -8,7 +8,7 @@ const config = {
   entry: './src/index.js',
 
   output: {
-    path: path.resolve(__dirname, './www'),
+    path: path.resolve(__dirname, './ElectronApp/app'),
     filename: 'index.js'
   },
 
@@ -34,6 +34,12 @@ const config = {
         loader: 'babel-loader'
       }
     ]
+  },
+
+  externals: {
+    'electron': 'commonjs electron'
   }
+
 }
+
 module.exports = config;

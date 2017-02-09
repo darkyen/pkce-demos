@@ -1,0 +1,14 @@
+{
+  "name": "pkce-electron-demo",
+  "version": "1.0.0",
+  "description": "A simple app, mandatory package.json for electron apps!",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "auth0": "^2.6.0",
+    "electron-prebuilt": "^1.4.13",
+    "express": "^4.14.1",
+    "open": "0.0.5"
+  }
+}

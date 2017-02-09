@@ -1,9 +1,13 @@
 import env from '../env';
 import Auth0 from 'auth0-js';
 import decodeJwt from 'jwt-decode';
-import HybridOAuthClient from './HybridOAuthClient';
+import Session from './Session';
 import PKCEAuth from './PKCEAuth';
 import autobind from 'core-decorators/lib/autobind';
+
+import Cordova from './adapters/Cordova';
+import Chrome from './adapters/Chrome.Identity';
+import Electron from './adapters/Electron';
 
 const $$ = (arg) => document.querySelectorAll(arg);
 const $ = (arg) => document.querySelector(arg);
@@ -82,10 +86,34 @@ class App {
         });
     }
 
+    getApplicableAdapter () {
+        /* @TODO: Make this env specific so app size doesn't bloat*/
+        if(window.electron){
+            return Electron;
+        }
+        if(window.cordova){
+            return Cordova;
+        }
+        if(window.chrome.runtime){
+            return Chrome;
+        }
+    }
+
     login(e) {
-        e.target.disabled = true;
-        const client = new HybridOAuthClient(env.domain, env.packageIdentifier);
-        const pkceAuth = new PKCEAuth(env.domain, env.clientID, client.getRedirectURL());
+        if (e.target) {
+            e.target.disabled = true;
+        }
+
+        if(window.chrome && Chrome.getContext() !== 'background'){
+            /* Send message and return, the background script will execute just this */
+            return chrome.runtime.sendMessage({
+                type: "authenticate"
+            });
+        }
+
+        const Adapter = this.getApplicableAdapter();
+        const adapter = new Adapter(env.domain, env.packageIdentifier);
+        const pkceAuth = new PKCEAuth(env.domain, env.clientID, adapter.getRedirectURL());
 
         const options = {
             scope: 'openid profile',
@@ -94,16 +122,18 @@ class App {
 
         const url = pkceAuth.buildAuthorizeUrl(options);
 
-        return client.launchWebAuthFlow(url, true)
+        return adapter.getResponseURL(url)
             .then((redirectUrl) => new Promise((resolve, reject) => {
                 const callback = (err, authResult) => err ? reject(err) : resolve(authResult);
                 pkceAuth.handleCallback(redirectUrl, callback);
             }))
             .then((authResult) => {
                 localStorage.setItem('access_token', authResult.accessToken);
+                if(window.chrome && Chrome.getContext() === 'background'){
+                    return; 
+                }
                 this.resumeApp();
-            })
-            .catch(() => e.target.disabled = false);
+            });
     }
 
     logout(e) {
@@ -134,6 +164,13 @@ class App {
         }
 
         this.render();
+    }
+
+    resumeAuth (...args) {
+        /* This is to avoid cordova from crashing on iOS */
+        setTimeout(function(){
+            Session.handleCallback(...args);
+        }, 4);
     }
 
     render() {
